@@ -1,14 +1,15 @@
-create database IF not exists loja;
-use loja;
-create table produtos(
-    id_produto int AUTO_INCREMENT PRIMARY KEY,
-    nome_produto varchar(100),
-    preco_produto decimal(5,2),
-    descricao text
-)
-create table imagens(
-    id_imagem int AUTO_INCREMENT PRIMARY KEY,
-    nome_imagem varchar(100),
-    fk_id_produto int,
+CREATE DATABASE IF NOT EXISTS loja;
+USE loja;
+
+CREATE TABLE produtos (
+    id_produto INT AUTO_INCREMENT PRIMARY KEY,
+    nome_produto VARCHAR(100),
+    preco_produto DECIMAL(5,2),
+    descricao TEXT
+);
+
+CREATE TABLE imagens (
+    id_imagem INT AUTO_INCREMENT PRIMARY KEY,
+    nome_imagem VARCHAR(100),
+    fk_id_produto INT,
     FOREIGN KEY (fk_id_produto) REFERENCES produtos(id_produto)
-    ) 
