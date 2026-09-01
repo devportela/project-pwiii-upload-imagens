@@ -1,222 +1,348 @@
 <?php
+
 require_once 'classes/Produto.class.php';
+
 $produto = new Produto();
 
 // Processa o envio do formulário
 if (isset($_POST['nome'])) {
-    $nome      = $_POST['nome'];
+
+    $nome = $_POST['nome'];
     $descricao = $_POST['descricao'];
-    $valor     = $_POST['valor'];
-    $fotos     = isset($_FILES['foto']) ? $_FILES['foto'] : array();
+    $valor = $_POST['valor'];
 
-    $produto->enviarProduto($nome, $descricao, $valor, $fotos);
+    $fotos = isset($_FILES['foto'])
+        ? $_FILES['foto']
+        : array();
 
-    header("Location: index.php");
+    $produto->enviarProduto(
+        $nome,
+        $descricao,
+        $valor,
+        $fotos
+    );
+
+    // Redireciona informando que o produto foi cadastrado
+    header("Location: index.php?sucesso=1");
     exit();
 }
+
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
     <title>Cadastrar Produto</title>
+
     <style>
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
         }
 
         body {
             background-color: #f4f6f8;
+
             color: #333;
-            padding: 2rem 1rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+
+            min-height: 100vh;
+
+            padding: 40px 20px;
         }
 
-        h1, h2 {
-            margin-bottom: 1.5rem;
-            color: #1a1a1a;
+        .container {
+            width: 100%;
+
+            max-width: 600px;
+
+            margin: 0 auto;
+        }
+
+        h1 {
             text-align: center;
+
+            margin-bottom: 25px;
+
+            color: #222;
         }
 
         form {
-            background: #ffffff;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-            width: 100%;
-            max-width: 500px;
-            margin-bottom: 3rem;
+            background-color: white;
+
+            padding: 30px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0, 0, 0, 0.08);
         }
 
         .form-group {
-            margin-bottom: 1.2rem;
+            margin-bottom: 20px;
         }
 
         label {
             display: block;
-            font-weight: 600;
-            margin-bottom: 0.4rem;
-            font-size: 0.9rem;
-            color: #555;
+
+            margin-bottom: 8px;
+
+            font-weight: bold;
+
+            color: #444;
         }
 
-        input[type="text"],
-        input[type="number"],
-        textarea,
-        input[type="file"] {
+        input,
+        textarea {
             width: 100%;
-            padding: 0.75rem;
+
+            padding: 12px;
+
             border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 1rem;
-            transition: border-color 0.2s;
+
+            border-radius: 7px;
+
+            font-size: 16px;
+
+            outline: none;
         }
 
-        input[type="text"]:focus,
-        input[type="number"]:focus,
+        input:focus,
         textarea:focus {
             border-color: #0066cc;
-            outline: none;
         }
 
         textarea {
             resize: vertical;
+
+            min-height: 100px;
         }
 
-        button[type="submit"] {
+        .btn-cadastrar {
             width: 100%;
-            background-color: #0066cc;
-            color: #fff;
-            padding: 0.8rem;
+
+            padding: 13px;
+
             border: none;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: 600;
+
+            border-radius: 7px;
+
+            background-color: #0066cc;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
             cursor: pointer;
-            transition: background 0.2s;
+
+            transition: 0.2s;
         }
 
-        button[type="submit"]:hover {
+        .btn-cadastrar:hover {
             background-color: #0052a3;
         }
 
-        hr {
-            width: 100%;
-            max-width: 900px;
-            border: 0;
+        .separador {
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+            margin: 25px 0;
+        }
+
+        .separador::before,
+        .separador::after {
+            content: "";
+
+            flex: 1;
+
             height: 1px;
-            background: #e0e0e0;
-            margin-bottom: 2rem;
+
+            background-color: #ddd;
         }
 
-        .produtos-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 1.5rem;
+        .separador span {
+            color: #888;
+
+            font-size: 14px;
+        }
+
+        .btn-produtos {
+            display: block;
+
             width: 100%;
-            max-width: 900px;
-        }
 
-        .produto-card-link {
+            padding: 13px;
+
+            background-color: #333;
+
+            color: white;
+
+            text-align: center;
+
             text-decoration: none;
-            color: inherit;
+
+            border-radius: 7px;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            transition: 0.2s;
         }
 
-        .produto-card {
-            background: #fff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-            transition: transform 0.2s, box-shadow 0.2s;
-            text-align: center;
+        .btn-produtos:hover {
+            background-color: #222;
         }
 
-        .produto-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-        }
-
-        .produto-card img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .produto-card h2 {
-            font-size: 1.1rem;
-            padding: 1rem;
-            margin: 0;
-            color: #2c3e50;
-        }
-
-        .empty-msg {
-            text-align: center;
-            color: #777;
-            font-style: italic;
-        }
     </style>
+
 </head>
+
 <body>
 
-    <h1>Cadastrar Produto</h1>
+    <div class="container">
 
-    <form method="post" enctype="multipart/form-data">
-        <div class="form-group">
-            <label for="nome">Nome do Produto</label>
-            <input type="text" id="nome" name="nome" required placeholder="Ex: Sofá Retrátil">
+        <h1>
+            Cadastrar Produto
+        </h1>
+
+
+        <form
+            method="post"
+            enctype="multipart/form-data"
+        >
+
+            <div class="form-group">
+
+                <label for="nome">
+                    Nome do Produto
+                </label>
+
+                <input
+                    type="text"
+                    id="nome"
+                    name="nome"
+                    placeholder="Ex: Sofá Retrátil"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="descricao">
+                    Descrição
+                </label>
+
+                <textarea
+                    id="descricao"
+                    name="descricao"
+                    placeholder="Informe os detalhes do produto..."
+                    required
+                ></textarea>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="valor">
+                    Valor (R$)
+                </label>
+
+                <input
+                    type="number"
+                    id="valor"
+                    name="valor"
+                    step="0.01"
+                    min="0"
+                    placeholder="0.00"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="foto">
+                    Imagens do Produto
+                </label>
+
+                <input
+                    type="file"
+                    id="foto"
+                    name="foto[]"
+                    multiple
+                    required
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn-cadastrar"
+            >
+                Cadastrar Produto
+            </button>
+
+        </form>
+
+
+        <div class="separador">
+            <span>ou</span>
         </div>
 
-        <div class="form-group">
-            <label for="descricao">Descrição</label>
-            <textarea id="descricao" name="descricao" rows="4" required placeholder="Informe os detalhes do produto..."></textarea>
-        </div>
 
-        <div class="form-group">
-            <label for="valor">Valor (R$)</label>
-            <input type="number" id="valor" name="valor" step="0.01" min="0" required placeholder="0.00">
-        </div>
+        <a
+            href="ProdutoEstatico.php"
+            class="btn-produtos"
+        >
+            Ver produtos
+        </a>
 
-        <div class="form-group">
-            <label for="foto">Imagens do Produto</label>
-            <input type="file" id="foto" name="foto[]" multiple required>
-        </div>
+    </div>
 
-        <button type="submit">Cadastrar Produto</button>
-    </form>
 
-    <hr>
+    <?php
 
-    <h2>Produtos Cadastrados</h2>
+    // Mostra o alerta depois do cadastro
+    if (isset($_GET['sucesso']) && $_GET['sucesso'] == 1) {
 
-    <section class="produtos-grid">
-        <?php
-        $dadosProduto = $produto->buscarProdutos();
+        echo "
+        <script>
+            alert('Produto cadastrado com sucesso!');
+        </script>
+        ";
 
-        if (empty($dadosProduto)) {
-            echo "<p class='empty-msg'>Ainda não há produtos cadastrados aqui!</p>";
-        } else {
-            foreach ($dadosProduto as $Value) {
-                ?>
-                <a href="exibir_produto.php?id=<?php echo $Value['id_produto']; ?>" class="produto-card-link">
-                    <div class="produto-card">
-                        <?php if (!empty($Value['foto_capa'])): ?>
-                            <img src="imgs/<?php echo $Value['foto_capa']; ?>" alt="<?php echo $Value['nome_produto']; ?>">
-                        <?php endif; ?>
-                        <h2><?php echo $Value['nome_produto']; ?></h2>
-                    </div>
-                </a>
-                <?php
-            }
-        }
-        ?>
-    </section>
+    }
+
+    ?>
 
 </body>
+
 </html>
+```
